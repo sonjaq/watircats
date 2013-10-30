@@ -35,9 +35,13 @@ module WatirCats
         folders        = WatirCats::Snapper.folders
         base_folder    = folders.first
         changed_folder = folders.last
-        strip_status   = parameter_hash[:strip_zero]
 
-        WatirCats::Comparer.new(base_folder, changed_folder, output_dir, strip_status)
+        WatirCats::Comparer.new( 
+                            base_folder, 
+                            changed_folder, 
+                            output_dir, 
+                            @options
+                            )
 
       # Only take screenshots
       when :screenshots_only
@@ -61,7 +65,13 @@ module WatirCats
       when :folders
         base_folder    = sources.first
         changed_folder = sources.last
-        WatirCats::Comparer.new(base_folder, changed_folder, output_dir, parameter_hash[:strip_zero])
+        WatirCats::Comparer.new(
+                            base_folder, 
+                            changed_folder, 
+                            output_dir, 
+                            @options
+                            )
+      # End case
       end
 
 

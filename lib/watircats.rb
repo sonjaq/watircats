@@ -7,7 +7,6 @@ require "openssl"
 require "watir-webdriver"
 
 # Internal Requires
-require "watircats/helper"
 require "watircats/comparer"
 require "watircats/mapper"
 require "watircats/reporter"

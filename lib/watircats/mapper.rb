@@ -13,6 +13,7 @@ module WatirCats
       @@new_paths    = {}
 
       # Subtree is a way to limit screenshots based on a path. It gets placed into a regular expression.
+      @subtree ||= nil
       if options[:subtree] == nil
         @subtree = nil
       else 
@@ -115,17 +116,17 @@ module WatirCats
       
       # Return the paths if there is a @limit
       return @the_paths.first(@limit.to_i) if @limit
-      @the_paths
+      @the_paths.first(@the_paths.length)
     end
 
     def master_paths
       # Enforce limit on @@master_paths, too, because why not
       return @@master_paths.first(@limit.to_i) if @limit
-      @@master_paths
+      @@master_paths.first(@@master_paths.length)
     end
 
     def new_paths
-      @@new_paths
+      @@new_paths.first(@@new_paths.length)
     end
   end
 end

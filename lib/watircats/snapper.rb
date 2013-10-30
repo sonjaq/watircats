@@ -3,11 +3,12 @@ require 'watir-webdriver'
 module WatirCats
   class Snapper
 
+
     BROWSER_HEIGHT = 5000
 
     def initialize(base_url, site_map, screenshot_dir)
       @base_url       = base_url
-      @screenshot_dir = screenshot_dir
+      @screenshot_dir = screenshot_dir.chomp("/")
       
       # Handle the Jenkins environment
       if $profile != nil
@@ -17,9 +18,9 @@ module WatirCats
       end
 
       # Allowing for custom page class tests
-      @class_tests         = []
-      @class_test_mapping  = {}
-      @@custom_test_results = {}
+      @class_tests          = [ ]
+      @class_test_mapping   = { }
+      @@custom_test_results = { }
 
       $custom_body_class_tests.each do |custom_test|
         # Store the custom class tests in the class_tests array
@@ -72,7 +73,7 @@ module WatirCats
       @widths = ENV['WIDTHS'].split(",").map { |w| w.to_i }
     end
 
-    def self.folders
+    def folders
       # Class variable, to keep track of folders amongst all instances of this class
       @@folders ||= []
     end

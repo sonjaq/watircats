@@ -4,18 +4,21 @@ module WatirCats
     NO_CHANGE = "Snow"
     ERROR     = "Crimson"
     CHANGE    = "Khaki"
-    def initialize(source_a, source_b, output_dir, strip_status = false)
+
+
+    def initialize(source_a, source_b, output_dir, options = {})
       # Get the directories in screenshots
       # @dirs = self.get_directories_to_compare
       @@results = []
-      @@strip_zero = strip_status
+      @@strip_zero = options[:strip_zero] || nil
+      @reporting = options[:reporting] || nil
       # Get the screenshots directory
      
-      @comparison_dir = output_dir
+      @comparison_dir = output_dir.chomp("/")
       # Get the last two directories that were created
       
-      previous_shots_folder = source_a
-      latest_shots_folder   = source_b
+      previous_shots_folder = source_a.chomp("/")
+      latest_shots_folder   = source_b.chomp("/")
 
       # Cleanup the comparison folder
       self.reset_comparison_folder
@@ -26,8 +29,16 @@ module WatirCats
     end
    
     def reset_comparison_folder
-      FileUtils.rm("#{@comparison_dir}/*_compared.png") if File.directory? @comparison_dir
-      FileUtils.mkdir(@comparison_dir)
+      if File.directory? @comparison_dir
+        dir_contents = Dir.glob("#{@comparison_dir}/*_compared.png")
+        if dir_contents.size > 0
+          dir_contents.each do |shot|
+            FileUtils.rm(shot)  
+          end
+        end
+      else
+        FileUtils.mkdir(@comparison_dir)
+      end
     end
 
     def compare_directories(latest, previous)
@@ -49,7 +60,8 @@ module WatirCats
         elsif comparison.match(/^[1-9]/)
           status = CHANGE
         end
-        @@results << { :compared_shot => output_file, :result => comparison, :status_color => status }
+        @@results << { :compared_shot => output_file, 
+                       :result => comparison, :status_color => status }
 
         # Remove the file if there is no change to be concerned with
         if @@strip_zero == true 
@@ -61,17 +73,24 @@ module WatirCats
           end
         end
 
-      
       end
-    unless File.directory? "#{@comparison_dir}/thumbs"
-      FileUtils.mkdir "#{@comparison_dir}/thumbs"
+      # Run the generate thumbs
+      generate_thumbs if @reporting
+    end
+    
+    def generate_thumbs  
+    
+      unless File.directory? "#{@comparison_dir}/thumbs"
+        FileUtils.mkdir "#{@comparison_dir}/thumbs"
+      end
+
+      current_path = FileUtils.pwd
+      FileUtils.chdir "#{@comparison_dir}"
+      thumbs = `mogrify -format png -path thumbs -thumbnail 50x100 *.png`
+      FileUtils.chdir "#{current_path}"
+    
     end
 
-    current_path = FileUtils.pwd
-    FileUtils.chdir "#{@comparison_dir}"
-    thumbs = `mogrify -format png -path thumbs -thumbnail 50x100 *.png`
-    FileUtils.chdir "#{current_path}"
-    end
 
     def compare_images(latest_grab, previous_grab, output_file)
       data = `compare -fuzz 20% -metric AE -highlight-color blue #{previous_grab} #{latest_grab} #{@comparison_dir}/#{output_file} 2>&1`.chomp

@@ -60,7 +60,7 @@ module WatirCats
       WatirCats::Runner.new(:compare, parameters)
 
       if options[:reporting]
-        
+        $reporting = options[:reporting]        
         data   = WatirCats::Comparer.results
         data.each { |e| @exit_status = 1 unless e[:result].match(/0/) }
 
@@ -122,6 +122,17 @@ module WatirCats
       # Additional output options (globals feel hacky)
       $verbose = options[:verbose]
       $csv     = options[:csv]
+
+      if options[:reporting]
+        $reporting = options[:reporting]     
+        data   = WatirCats::Comparer.results
+        data.each { |e| @exit_status = 1 unless e[:result].match(/0/) }
+
+        report = WatirCats::Reporter.new(data).build_html
+        File.open("#{options[:output_dir]}/index.html", "w") do |f|
+          f.write report
+        end
+      end
 
       WatirCats::Runner.new(:folders, parameters)
 
