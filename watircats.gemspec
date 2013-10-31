@@ -19,7 +19,6 @@ Gem::Specification.new do |s|
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ["lib"]
 
-  s.add_dependency 'open-uri'
   s.add_dependency 'require_all'
   s.add_dependency 'thor', '>=0.17.0'
   s.add_dependency 'watir-webdriver'
