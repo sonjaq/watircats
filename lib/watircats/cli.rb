@@ -34,6 +34,7 @@ module WatirCats
       parameters[:subtree]        = options[:subtree]
       parameters[:strip_zero]     = options[:strip_zero]
       parameters[:url_list]       = options[:url_list]
+      parameters[:reporting]      = options[:reporting]
 
       # Handle a working directory
       if options[:working_dir]
@@ -108,6 +109,7 @@ module WatirCats
       parameters[:screenshot_dir] = options[:screenshot_dir]
       parameters[:sources]        = sources
       parameters[:strip_zero]     = options[:strip_zero]
+      parameters[:reporting]      = options[:reporting]
 
       # Handle a working directory
       if options[:working_dir]

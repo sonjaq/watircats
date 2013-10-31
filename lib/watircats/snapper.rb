@@ -73,7 +73,7 @@ module WatirCats
       @widths = ENV['WIDTHS'].split(",").map { |w| w.to_i }
     end
 
-    def folders
+    def self.folders
       # Class variable, to keep track of folders amongst all instances of this class
       @@folders ||= []
     end
