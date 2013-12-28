@@ -1,0 +1,19 @@
+# Sample parameters for the config file
+# Uncomment any line below and place in your custom values
+# 
+# avoided_path            : string_that_matches_paths_to_avoid
+# browser                 : firefox
+# csv                     : false
+# custom_body_class_tests : path/to/custom_tests_file.rb
+# ff_path                 : /Applications/FirefoxESR.app/Contents/MacOS/firefox-bin
+# limit                   : 1
+# limited_path            : a_string_that_becomes_a_regex_to_narrow_screenshots
+# output_dir              : comparison
+# proxy                   : my_proxy_info:8080
+# reporting_enabled       : true
+# screenshot_dir          : screenshots
+# strip_zero_differences  : true
+# url_list                : path/to/plain_text_list_of_urls.txt
+# verbose                 : false
+# widths                  : [1024, 800]
+# working_dir             : sample_working_dir/
