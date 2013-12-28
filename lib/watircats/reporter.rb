@@ -3,6 +3,7 @@ require "awesome_print"
 
 module WatirCats
   class Reporter
+    # Handles the report generation
 
     def initialize(results_array)
       @data = results_array
@@ -11,7 +12,7 @@ module WatirCats
     def build_html
       # Create a report based off of the template data. 
       # binding gives Haml context, and @data dumps the relevant information in
-      Haml::Engine.new(self.get_screenshot_template).render binding, :data => @data
+      Haml::Engine.new(get_screenshot_template).render binding, :data => @data
     end
 
     def get_screenshot_template

@@ -6,25 +6,23 @@ module WatirCats
     CHANGE    = "Khaki"
 
 
-    def initialize(source_a, source_b, output_dir, options = {})
+    def initialize(source_a, source_b)
       # Get the directories in screenshots
       # @dirs = self.get_directories_to_compare
-      @@results = []
-      @@strip_zero = options[:strip_zero] || nil
-      @reporting = options[:reporting] || nil
-      # Get the screenshots directory
+      @@results    = []
+      @@strip_zero = WatirCats.config.strip_zero_differences || nil
      
-      @comparison_dir = output_dir.chomp("/")
+      @comparison_dir = WatirCats.config.output_dir.chomp("/")
       # Get the last two directories that were created
       
       previous_shots_folder = source_a.chomp("/")
       latest_shots_folder   = source_b.chomp("/")
 
       # Cleanup the comparison folder
-      self.reset_comparison_folder
+      reset_comparison_folder
 
       # Compare the directories
-      self.compare_directories(latest_shots_folder, previous_shots_folder)
+      compare_directories(latest_shots_folder, previous_shots_folder)
       
     end
    
@@ -53,7 +51,7 @@ module WatirCats
         base_name     = old_shot.split("/").last.split(".").first
         output_file   = base_name + "_compared.png"
 
-        comparison = self.compare_images(new_shot, old_shot, output_file)
+        comparison = compare_images(new_shot, old_shot, output_file)
         status = NO_CHANGE
         if comparison.match(/error/)
           status = ERROR
@@ -75,20 +73,21 @@ module WatirCats
 
       end
       # Run the generate thumbs
-      generate_thumbs if @reporting
+      generate_thumbs if WatirCats.config.reporting_enabled
     end
     
     def generate_thumbs  
     
-      unless File.directory? "#{@comparison_dir}/thumbs"
-        FileUtils.mkdir "#{@comparison_dir}/thumbs"
-      end
+      unless Comparer.results.size < 1
+        unless File.directory? "#{@comparison_dir}/thumbs"
+          FileUtils.mkdir "#{@comparison_dir}/thumbs"
+        end
 
-      current_path = FileUtils.pwd
-      FileUtils.chdir "#{@comparison_dir}"
-      thumbs = `mogrify -format png -path thumbs -thumbnail 50x100 *.png`
-      FileUtils.chdir "#{current_path}"
-    
+        current_path = FileUtils.pwd
+        FileUtils.chdir "#{@comparison_dir}"
+        thumbs = `mogrify -format png -path thumbs -thumbnail 50x100 *.png`
+        FileUtils.chdir "#{current_path}"
+      end
     end
 
 
@@ -96,9 +95,11 @@ module WatirCats
       data = `compare -fuzz 20% -metric AE -highlight-color blue #{previous_grab} #{latest_grab} #{@comparison_dir}/#{output_file} 2>&1`.chomp
       # Handle logging
       return data if ( @@strip_zero == true && data.match(/^0/) )
-      print "#{output_file}" if $csv == true || $verbose == true
-      print ",#{data}" if $csv == true
-      print "\n" if $csv == true || $verbose == true
+      csv = WatirCats.config.csv
+      verbose = WatirCats.config.verbose
+      print "#{output_file}" if ( csv || verbose )
+      print ",#{data}" if csv
+      print "\n" if ( csv || verbose )
       # Return data
       data
     end

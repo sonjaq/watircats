@@ -4,52 +4,49 @@ require "xmlsimple"
 module WatirCats
   class Mapper
 
-    def initialize(base_url, scheme, options)
+    def initialize( base_url, scheme )
       # Class variables that persist throughout the life of the application
       
-      @limit = options[:limit] || nil
+      @limit = WatirCats.config.limit
+      @proxy = WatirCats.config.proxy
 
       @@master_paths = {}
       @@new_paths    = {}
 
       # Subtree is a way to limit screenshots based on a path. It gets placed into a regular expression.
-      @subtree ||= nil
-      if options[:subtree] == nil
-        @subtree = nil
-      else 
-        @subtree = /#{options[:subtree]}/
-      end
+      restrict_paths
 
       @base_url = base_url
   
       # If the :url_list option is passed, it is assumed to be a file of urls,
       # one on each line. Otherwise, assume there is a sitemap
-      if options[:url_list]
+      if WatirCats.config.url_list
         begin
-          urls = File.readlines options[:url_list]
+          urls = File.readlines WatirCats.config.url_list
           urls.each { |url| url.strip! }
         rescue Exception => msg
           print msg
           exit 1
         end
       else
-        xml        = self.get_sitemap_as_xml(scheme, @base_url) 
-        urls       = self.parse_sitemap_into_urls(xml)
+        xml        = get_sitemap_as_xml( scheme, @base_url ) 
+        urls       = parse_sitemap_into_urls(xml)
       end
 
-      @the_paths = self.paths(urls)
+      @the_paths = paths(urls)
     end
 
     def get_sitemap_as_xml(scheme, base_url)
 
-      if $open_uri_proxy
-        proxy = scheme + "://" + $open_uri_proxy
+      the_scheme = scheme || "http"
+      if @proxy
+        proxy = the_scheme + "://" + @proxy
       else
         proxy = nil
       end
 
       begin 
-        sitemap_data = ::OpenURI.open_uri((scheme + "://" + base_url + "/sitemap.xml"), {:proxy => proxy})
+        sitemap_data = ::OpenURI.open_uri((the_scheme + "://" + base_url + "/sitemap.xml"), :proxy => proxy )
         sitemap_xml  = ::XmlSimple.xml_in(sitemap_data)
       rescue Exception => msg
         print msg
@@ -84,8 +81,12 @@ module WatirCats
       urls.each do |url|
         path = URI.parse(url).path
 
+        # Handled paths to look for and avoid
         if @subtree
-          next unless path.match @subtree
+          next unless path.match @subtree 
+        end
+        if @avoided_path
+          next if path.match @avoided_path
         end
 
         path_key = path.tr("/","-")[1..-2] unless path == "/"
@@ -128,5 +129,21 @@ module WatirCats
     def new_paths
       @@new_paths.first(@@new_paths.length)
     end
+
+    def restrict_paths
+
+      # Only visit paths that match @subtree
+      @subtree = WatirCats.config.limited_path
+      if @subtree 
+        @subtree = /#{WatirCats.config.limited_path}/
+      end
+      
+      # If avoided_path is specified, avoid those
+      @avoided_path = WatirCats.config.avoided_path
+      if @avoided_path
+        @avoided_path = /#{WatirCats.config.avoided_path}/
+      end
+    end
+
   end
 end

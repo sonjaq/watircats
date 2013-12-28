@@ -2,47 +2,46 @@ require 'watir-webdriver'
 
 module WatirCats
   class Snapper
-
-
+    
     BROWSER_HEIGHT = 5000
 
-    def initialize(base_url, site_map, screenshot_dir)
+    def initialize(base_url, site_map)
       @base_url       = base_url
-      @screenshot_dir = screenshot_dir.chomp("/")
+      @screenshot_dir = WatirCats.config.screenshot_dir
+      @widths         = WatirCats.config.widths
       
-      # Handle the Jenkins environment
-      if $profile != nil
-        @browser = ::Watir::Browser.new :ff, :profile => $profile
-      else
-        @browser = ::Watir::Browser.new :ff
-      end
+      # Handle the environments that require profile configuration
+      configure_browser
 
       # Allowing for custom page class tests
       @class_tests          = [ ]
       @class_test_mapping   = { }
       @@custom_test_results = { }
 
-      $custom_body_class_tests.each do |custom_test|
-        # Store the custom class tests in the class_tests array
-        # Map the class to the relevant method name
-        
-        body_class = custom_test[:body_class_name]
-        @class_tests << body_class
-        if @class_test_mapping[ body_class ] 
-          @class_test_mapping[ body_class ] = @class_test_mapping[ body_class ] + [ custom_test[:method_name] ]
-        else 
-          @class_test_mapping[ body_class ] = [ custom_test[:method_name] ]
-        end
+      if WatirCats.config.custom_body_class_tests
+        load WatirCats.config.custom_body_class_tests
+        $custom_body_class_tests.each do |custom_test|
+          # Store the custom class tests in the class_tests array
+          # Map the class to the relevant method name
+          
+          body_class = custom_test[:body_class_name]
+          @class_tests << body_class
+          if @class_test_mapping[ body_class ] 
+            @class_test_mapping[ body_class ] = @class_test_mapping[ body_class ] + [ custom_test[:method_name] ]
+          else 
+            @class_test_mapping[ body_class ] = [ custom_test[:method_name] ]
+          end
 
-        custom_code = "def #{custom_test[:method_name]}; #{custom_test[:custom_code]}; end"
-        WatirCats::Snapper.class_eval custom_code
+          custom_code = "def #{custom_test[:method_name]}; #{custom_test[:custom_code]}; end"
+          WatirCats::Snapper.class_eval custom_code
+        end
       end
 
       # Retrieve the paths from the sitemap
       @paths      = site_map.the_paths
       @time_stamp = Time.now.to_i.to_s
       
-      self.process_paths
+      process_paths
       @browser.quit
     end
 
@@ -53,24 +52,16 @@ module WatirCats
 
     def capture_page_image(url, file_name)
       @browser.goto url
-      # Wait for page to complete loading 
-      # TODO: Remove CW-references
+      # Wait for page to complete loading by querying document.readyState
+      script = "return document.readyState"
+      @browser.wait_until { @browser.execute_script(script) == "complete" }
       
-      begin
-        @browser.execute_script( "CWjQuery(window).load(function(){return true});" )
-      rescue
-        # Just move on
-      end
-
+      # Take and save the screenshot      
       @browser.screenshot.save(file_name)
     end
 
     def widths
-      unless ENV['WIDTHS']
-        @widths = [1024]
-        return @widths
-      end
-      @widths = ENV['WIDTHS'].split(",").map { |w| w.to_i }
+      @widths = @widths || [1024]
     end
 
     def self.folders
@@ -90,7 +81,7 @@ module WatirCats
       stamped_base_url_folder = "#{@screenshot_dir}/#{@base_url}-#{@time_stamp}"
       FileUtils.mkdir "#{stamped_base_url_folder}" 
  
-      self.add_folder(stamped_base_url_folder)
+      add_folder(stamped_base_url_folder)
 
       # Some setup for processing
       paths = @paths
@@ -115,15 +106,40 @@ module WatirCats
 
         # For each width, resize the browser, take a screenshot
         widths.each do |width|
-          self.resize_browser width
+          resize_browser width
           file_name = "#{stamped_base_url_folder}/#{label}_#{width}.png"
-          self.capture_page_image("#{@base_url}#{path}", file_name)
+          capture_page_image("#{@base_url}#{path}", file_name)
         end
       end
     end
 
+    def configure_browser
+      engine = WatirCats.config.browser || :ff
+
+      # Firefox only stuff, allowing a custom binary location and proxy support
+      if ( engine.to_sym == :ff || engine.to_sym == :firefox )
+
+        bin_path = WatirCats.config.ff_path
+        proxy    = WatirCats.config.proxy
+        ::Selenium::WebDriver::Firefox::Binary.path= bin_path if bin_path.is_a? String
+        
+        profile = ::Selenium::WebDriver::Firefox::Profile.new 
+        
+        if proxy
+          profile.proxy = ::Selenium::WebDriver::Proxy.new :http => proxy, :ssl => proxy
+        end
+
+        profile['app.update.auto']    = false
+        profile['app.update.enabled'] = false
+
+        @browser = ::Watir::Browser.new engine, :profile => profile
+      else
+        @browser = ::Watir::Browser.new engine
+      end
+    end
+
     def self.custom_test_results
-      @@custom_test_results ||= {}
+      @@custom_test_results ||= { }
     end
 
   end

@@ -1,10 +1,14 @@
-# Wraith
+# WatirCats
 
- * Website: http://responsivenews.co.uk
- * Source: http://github.com/bbc-news/wraith
+WatirCats began as a simple for to Wraith, from the developers at BBC News.
 
-Wraith is a screenshot comparison tool, created by developers at BBC News.
+Orignally, Wraith used Phantom.js as it's browser, but it was too darned slow, so the browsing engine was converted to Watir-Webdriver. There were also several other limitations to Wraith that hampered its use at Clockwork, so it was enhanced to support a number of unique features. There is part of one line left of core functionality from Wraith that calls ImageMagick's 'compare' executable. Everything else is fresh code.
 
+Some of the features
+	- Multiple sources for URLs, but most rely on /sitemap.xml for use
+	- Multiple Browsing engines. Chrome, Firefox, FirefoxESR, and even IE
+	- Proxy and custom binary path support for Firefox
+	- Specify multiple widths of screenshots
 
 ## What is it?
 
@@ -19,39 +23,14 @@ WatirCats uses Watir-Webdriver to grab screenshots of pages at multiple widths. 
 
 ## Installation
 
+gem install watircats
 
 
 ## Config
 
-All config will be placed in config.yml. You can specify domains, paths, screen
-widths & HTTP headers.
-
-```yaml
-# Add a domain as the dev aprameter
-domains:
-  dev:
-
-#Type screen widths below, here are a couple of examples
-screen_widths:
-  - 320
-  - 600
-  - 768
-  - 1024
-  - 1280
-
-#Type page URL paths below, here are a couple of examples
-paths:
-  search_page: /imghp
-  map_page: /maps
-```
+Configuration can be done at the command line or via a config file. See 'sample_config.yml' for the available parameters. Specify a config file at runtime with --config_file "my_config_file.yml"
 
 
-## Using Wraith
-
-```
-## Output
-
-## Contributing
 
 If you want to add functionality to this project, pull requests are welcome.
 
@@ -74,8 +53,6 @@ licence. Take a look at the LICENSE file in the code.
 
 ## Credits
 
- * [Dave Blooman](http://twitter.com/dblooman)
- * [John Cleveley](http://twitter.com/jcleveley)
- * [Simon Thulbourn](http://twitter.com/sthulbourn)
- * [Andrew Leaf](http://twitter.com/avleaf)
+ * [Original Source](http://github.com/bbc-news/wraith)
+ * [Andrew Leaf](http://clockwork.net/people/avleaf)
 

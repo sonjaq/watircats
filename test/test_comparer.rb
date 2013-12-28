@@ -3,18 +3,18 @@ require 'watircats'
 class ComparerTest < Minitest::Test
   
   def setup
+    # Initial setup
+    WatirCats.configure :output_dir => "test/testables/output"
+
     @source_a = "test/testables/folder_a/"
     @source_b = "test/testables/folder_b/"
-    @output   = "test/testables/output"
+    @output   = WatirCats.config.output_dir
   end
 
   def test_compare_directories_and_results
-    output_dir = "#{@output}/no_thumbs"
-    comparer = WatirCats::Comparer.new(
-      @source_a,
-      @source_b,
-      output_dir
-      )
+    WatirCats.configure :reporting_enabled => false, :output_dir => "test/testables/output/no_thumbs"
+    output_dir = WatirCats.config.output_dir
+    comparer = WatirCats::Comparer.new( @source_a, @source_b )
 
     results = WatirCats::Comparer.results
     expected = [{ :compared_shot => "watircat_compared.png", 
@@ -28,14 +28,10 @@ class ComparerTest < Minitest::Test
   end
 
   def test_compare_directories_and_results_with_reporting
-    output_dir = "#{@output}/with_thumbs"
-    options = { :reporting => true }
-    comparer = WatirCats::Comparer.new(
-      @source_a,
-      @source_b,
-      output_dir,
-      options
-      )
+    WatirCats.configure :reporting_enabled => true, :output_dir => "test/testables/output/with_thumbs"
+    output_dir = WatirCats.config.output_dir
+
+    comparer = WatirCats::Comparer.new( @source_a, @source_b )
 
     results = WatirCats::Comparer.results
     expected = [{ :compared_shot => "watircat_compared.png", 

@@ -1,214 +1,183 @@
 require 'thor'
 require 'watircats'
+require 'yaml'
+
+# CLI for WatirCats. Options and commands for any of the available utilities
+# available through the watircats executable
 
 module WatirCats
   class CLI < Thor
 
-    desc "compare SITE_A SITE_B", "Compare Screenshots from two sites"
-    method_option :output_dir, :aliases => "-o", :desc =>  "Specify the output directory for comparison images", :default => "comparison"
-    method_option :screenshot_dir, :aliases => "-s", :desc => "Specify the directory to save original screenshots", :default => "screenshots"
-    method_option :working_dir, :aliases => "-w", :type => :string, :desc => "Set a working directory"
-   
-    method_option :custom_tests, :type => :string, :desc => "Supply the path to a local file that contains contents in a $custom_body_class_tests in a specific format"
-    method_option :url_list, :type => :string, :desc => "Use a list of URLs instead of crawling the sitemap. This must be a file, with one URL per line."
-   
-    method_option :limit, :type => :numeric, :desc => "Limit the number of pages that will be crawled", :default => nil
-    method_option :subtree, :type => :string, :desc => "Specify a string or regex that paths must match"
-    method_option :reporting, :type => :boolean, :desc => "Generate an HTML report" 
-    method_option :strip_zero, :aliases => "-z", :type => :boolean, :desc => "Remove 0 pixel change listings from the results", :default => false
-    method_option :csv, :type => :boolean, :desc => "Outputs the verbose content, along with the number of pixels that changed in CSV style", :default => false
-    method_option :verbose, :type => :boolean, :desc => "Output results to STDOUT for comparison only", :default => false
-   
+    # Options that are common for comparison operations
+    common_compare_options = {
+      [:output_dir, '-o']             => "comparison",
+      [:screenshot_dir, '-s']         => "screenshots",
+      [:working_dir, '-w']            => :string,
+      [:reporting_enabled, '-r']      => :boolean,
+      [:csv_output]                   => :boolean,
+      [:verbose, '-v']                => :boolean,
+      [:strip_zero_differences, '-z'] => :boolean,
+      [:config_file, '-c']            => :string,
+    }
+
+    # Options that are common for screenshot operations
+    common_screenshot_options = {
+      [:browser, '-b']           => "firefox",
+      [:widths]                  => :array, 
+      [:limit, '-l']             => :numeric,
+      [:url_list]                => :string,
+      [:limit]                   => :string,
+      [:custom_body_class_tests] => :string,
+      [:proxy, '-p']             => :string,
+      [:limited_path]            => :string,
+      [:avoided_path]            => :string
+    }
+
+    # Description for the next-to-be-defined 'compare' task
+    desc 'compare http://SITE_A http://SITE_B', 'Compare Screenshots from two sites'
+    
+    # Add the options for comparison and screenshot operations to the next task
+    method_options common_compare_options
+    method_options common_screenshot_options
+
     def compare(*source_arguments)
-      parameters = {}
+      # Configure options      
+      handle_configuration( options )
+
       # Setting an exit status to track for altered screens
       @exit_status = 0 
 
+      # Create an empty array of sources
       sources = []
+
+      # Populate the sources array with each command line argument
       source_arguments.each { |s| sources << s }
 
-      parameters[:limit]          = options[:limit] unless options[:limit] == 0
-      parameters[:output_dir]     = options[:output_dir]
-      parameters[:screenshot_dir] = options[:screenshot_dir]
-      parameters[:sources]        = sources
-      parameters[:subtree]        = options[:subtree]
-      parameters[:strip_zero]     = options[:strip_zero]
-      parameters[:url_list]       = options[:url_list]
-      parameters[:reporting]      = options[:reporting]
-
-      # Handle a working directory
-      if options[:working_dir]
-        if File.directory? options[:working_dir]
-          Dir.chdir options[:working_dir]
-        else
-          FileUtils.mkdir options[:working_dir]
-          Dir.chdir options[:working_dir]
-        end
-      end
-
-      # Additional output options (globals feel hacky)
-      $verbose = options[:verbose]
-      $csv     = options[:csv]
-
-      # Run the custom_tests file to load the array there.
-      if options[:custom_tests]
-        load options[:custom_tests]
-      else
-        $custom_body_class_tests = []
-      end
+      # Handle a working directory by calling the private method 'handle_working_dir'
+      handle_working_dir
       
+      # Run the comparison
+      WatirCats::Runner.new( :compare, sources )
 
-      WatirCats::Runner.new(:compare, parameters)
+      # Handle the reporting functionality
+      handle_reporting
 
-      if options[:reporting]
-        $reporting = options[:reporting]        
-        data   = WatirCats::Comparer.results
-        data.each { |e| @exit_status = 1 unless e[:result].match(/0/) }
-
-        report = WatirCats::Reporter.new(data).build_html
-        File.open("#{options[:output_dir]}/index.html", "w") do |f|
-          f.write report
-        end
-      end
-
-      if options[:custom_tests]
-        results = WatirCats::Snapper.custom_test_results
-
-        report = WatirCats::Reporter.build_custom_results(results)
-
-        unless File.directory? options[:output_dir]
-          FileUtils.mkdir options[:output_dir]
-        end
-
-        File.open("#{options[:output_dir]}/custom_report.html", "w") do |f|
-          f.write report
-        end
-      end
-
+      # Exit based on the exit status of the application
       exit @exit_status
     end
 
-    desc "folders FOLDER_A FOLDER_B", "Compare two folders of screenshots"
-    method_option :output_dir, :aliases => "-o", :desc =>  "Specify the output directory for comparison images", :default => "comparison"
-    method_option :screenshot_dir, :aliases => "-s", :desc => "Specify the directory to save original screenshots", :default => "screenshots"
-    method_option :working_dir, :aliases => "-w", :type => :string, :desc => "Set a working directory"
-    method_option :reporting, :type => :boolean, :desc => "Generate an HTML report" 
-    method_option :strip_zero, :aliases => "-z", :type => :boolean, :desc => "Remove 0 pixel change listings from the results", :default => false
-    method_option :csv, :type => :boolean, :desc => "Outputs the verbose content, along with the number of pixels that changed in CSV style", :default => false
-    method_option :verbose, :type => :boolean, :desc => "Output results to STDOUT for comparison only", :default => false
-    
-    def folders(*source_arguments)
-      parameters = {}
+    desc 'folders FOLDER_A FOLDER_B', 'Compare two folders of screenshots'
+
+    # Add the options for comparison operations
+    method_options common_compare_options
+
+    def folders(*source_arguments)     
+      handle_configuration( options )
       # Setting an exit status to track for altered screens
       @exit_status = 0 
+      
+      # Create an empty array of sources
+      sources = [ ]
 
-      sources = []
+      # Populate the sources array with each command line argument
       source_arguments.each { |s| sources << s }
 
-      parameters[:output_dir]     = options[:output_dir]
-      parameters[:screenshot_dir] = options[:screenshot_dir]
-      parameters[:sources]        = sources
-      parameters[:strip_zero]     = options[:strip_zero]
-      parameters[:reporting]      = options[:reporting]
-
       # Handle a working directory
-      if options[:working_dir]
-        if File.directory? options[:working_dir]
-          Dir.chdir options[:working_dir]
-        else
-          FileUtils.mkdir options[:working_dir]
-          Dir.chdir options[:working_dir]
-        end
-      end
+      handle_working_dir
 
-      # Additional output options (globals feel hacky)
-      $verbose = options[:verbose]
-      $csv     = options[:csv]
+      # Run the folders command
+      WatirCats::Runner.new( :folders, sources )
 
-      if options[:reporting]
-        $reporting = options[:reporting]     
-        data   = WatirCats::Comparer.results
-        data.each { |e| @exit_status = 1 unless e[:result].match(/0/) }
-
-        report = WatirCats::Reporter.new(data).build_html
-        File.open("#{options[:output_dir]}/index.html", "w") do |f|
-          f.write report
-        end
-      end
-
-      WatirCats::Runner.new(:folders, parameters)
+      # Handle reporting
+      handle_reporting
 
       exit @exit_status
     end
 
+    desc 'screenshots SITE_A [SITE_B SITE_C ...]', 'Take Screenshots of any number of sites'
+ 
+    method_options common_compare_options
+    method_options common_screenshot_options
 
-
-
-    desc "screenshots SITE_A [SITE_B SITE_C ...]", "Take Screenshots of any number of sites"
-    method_option :output_dir, :aliases => "-o", :desc =>  "Specify the output directory for comparison images", :default => "comparison"
-    method_option :screenshot_dir, :aliases => "-s", :desc => "Specify the directory to save original screenshots", :default => "screenshots"
-    method_option :working_dir, :aliases => "-w", :type => :string, :desc => "Set a working directory"
-    
-    method_option :custom_tests, :type => :string, :desc => "Supply the path to a local file that contains contents in a $custom_body_class_tests in a specific format"
-    method_option :url_list, :type => :string, :desc => "Use a list of URLs instead of crawling the sitemap. This must be a file, with one URL per line."
-    
-    method_option :limit, :type => :numeric, :desc => "Limit the number of pages that will be crawled", :default => nil
-    method_option :subtree, :type => :string, :desc => "Specify a string or regex that paths must match"
-    
     def screenshots(*source_arguments)
-      parameters = {}
       # Setting an exit status to track for altered screens
       @exit_status = 0 
 
-      sources = []
+      # Create an empty array of sources
+      sources = [ ]
+
+      # Populate the sources array with each command line argument
       source_arguments.each { |s| sources << s }
 
-      parameters[:limit]          = options[:limit] unless options[:limit] == 0
-      parameters[:output_dir]     = options[:output_dir]
-      parameters[:screenshot_dir] = options[:screenshot_dir]
-      parameters[:sources]        = sources
-      parameters[:subtree]        = options[:subtree]
-      parameters[:strip_zero]     = options[:strip_zero]
-      parameters[:url_list]       = options[:url_list]
-
       # Handle a working directory
-      if options[:working_dir]
-        if File.directory? options[:working_dir]
-          Dir.chdir options[:working_dir]
-        else
-          FileUtils.mkdir options[:working_dir]
-          Dir.chdir options[:working_dir]
+      handle_working_dir
+
+      # Run the screenshots command
+      WatirCats::Runner.new( :screenshots_only, sources )
+
+      # Handle Reporting
+      handle_reporting
+
+      exit @exit_status
+    end
+
+    private
+
+    def handle_working_dir
+      # Handle a working directory
+      working_dir = WatirCats.config.working_dir
+      if working_dir
+        unless File.directory? working_dir
+          FileUtils.mkdir working_dir
         end
+        Dir.chdir working_dir
       end
+    end
 
-      # Run the custom_tests file to load the array there.
-      if options[:custom_tests]
-        load options[:custom_tests]
-      else
-        $custom_body_class_tests = []
-      end
-      
+    def handle_reporting
+      # Handle standard reporting
+      reporting = WatirCats.config.reporting_enabled
 
-      WatirCats::Runner.new(:screenshots_only, parameters)
+      if reporting
+        data       = WatirCats::Comparer.results
+        data.each { |e| @exit_status = 1 unless e[:result].match(/0/) }
 
-      if options[:custom_tests]
-        results = WatirCats::Snapper.custom_test_results
-
-        report = WatirCats::Reporter.build_custom_results(results)
-
-        unless File.directory? options[:output_dir]
-          FileUtils.mkdir options[:output_dir]
-        end
-
-        File.open("#{options[:output_dir]}/custom_report.html", "w") do |f|
+        report = WatirCats::Reporter.new( data ).build_html
+        File.open("#{WatirCats.config.output_dir}/index.html", 'w') do |f|
           f.write report
         end
       end
 
-      exit @exit_status
+      # Handle custom reporting
+      custom_tests = WatirCats.config.custom_body_class_tests
+
+      if custom_tests
+        results = WatirCats::Snapper.custom_test_results
+        report  = WatirCats::Reporter.build_custom_results( results )
+
+        File.open("#{WatirCats.config.output_dir}/custom_report.html", 'w') do |f|
+          f.write report
+        end
+      end
+
     end
-    
-    # method_option :screenshots_only, :type => :boolean, :desc => "Only take screenshots"
-    #default_task :help
+
+    def handle_configuration(options)
+      # Parse the command line options. If a config file if specified, merge 
+      # those values into the options hash as long as keys don't collide.
+      # Command line options override the config file.
+      
+      cloned_options = options.dup
+      if cloned_options[:config_file]
+        config = YAML::load_file cloned_options[:config_file] if cloned_options[:config_file]
+        config.each do |key,value|
+          cloned_options[key.to_sym] = value 
+        end
+      end
+      merged_opts = cloned_options.merge(options)
+      p merged_opts
+      WatirCats.configure merged_opts
+    end
+
   end
 end

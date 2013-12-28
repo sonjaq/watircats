@@ -9,6 +9,7 @@ GEM
       tilt
     minitest (5.0.6)
     multi_json (1.8.2)
+    psych (2.0.0)
     require_all (1.3.1)
     rubyzip (0.9.9)
     selenium-webdriver (2.35.1)
@@ -30,6 +31,7 @@ DEPENDENCIES
   awesome_print
   haml
   minitest
+  psych
   require_all
   thor
   watir-webdriver

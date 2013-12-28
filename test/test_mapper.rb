@@ -6,15 +6,15 @@ class MapperTest < Minitest::Test
   def setup
     @base_url = "www.clockwork.net"
     @scheme   = "http"
-    @options  = { :limit => 1 }
+    options  = { :limit => 1 }
     @xml_file = XmlSimple.xml_in(File.open("test/testables/sitemap.xml", "r"))
+    WatirCats.configure options
   end
 
   def test_parse_sitemap_into_urls
     map = WatirCats::Mapper.new(
       @base_url, 
-      @scheme, 
-      @options
+      @scheme
       ).parse_sitemap_into_urls(@xml_file)
 
     expected = [
@@ -37,25 +37,20 @@ class MapperTest < Minitest::Test
 
     paths = WatirCats::Mapper.new(
       @base_url,
-      @scheme,
-      @options
+      @scheme
       ).paths(urls)
 
     expected = {
-        "root" => "/",
-        "work" => "/work/",
-      "people" => "/people/",
-        "blog" => "/blog/"
+        "root"   => "/",
+        "work"   => "/work/",
+        "people" => "/people/",
+        "blog"   => "/blog/"
     }
     assert_equal paths, expected
   end
 
   def test_mapper
-    mapper = WatirCats::Mapper.new(
-      @base_url,
-      @scheme,
-      @options
-      )
+    mapper = WatirCats::Mapper.new( @base_url, @scheme )
     expected = [["root", "/"]]
     assert_equal mapper.the_paths, expected
     assert_equal mapper.master_paths, expected

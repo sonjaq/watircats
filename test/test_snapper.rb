@@ -7,25 +7,30 @@ class SnapperTest < Minitest::Test
     $custom_body_class_tests = []
     @sitemap                 = Minitest::Mock.new
     
-    @screenshot_dir = "test/testables/screenshot_tmp/"
+    @options = { 
+      :screenshot_dir => "test/testables/screenshot_tmp/",
+      :browser => :ff
+       }
     # Configure the mock object
     @sitemap.expect( :the_paths, [["root", "/"]] )
   end
 
   def test_snapper_takes_snaps
     
-    snapped = WatirCats::Snapper.new( @base_url, @sitemap, @screenshot_dir )
+    WatirCats.configure(@options)
+
+    snapped = WatirCats::Snapper.new( @base_url, @sitemap )
 
     working_dir = Dir.pwd
-    Dir.chdir(@screenshot_dir)
+    Dir.chdir( WatirCats.config.screenshot_dir )
     target_dir = Dir.glob("*/*.png")
-    expected = target_dir[0].split("/").include? "root_1024.png"
+    expected   = target_dir[0].split( "/" ).include? "root_1024.png"
     assert_equal 1, target_dir.size
     assert_equal true, expected
     Dir.chdir working_dir
   end
 
   def teardown
-    FileUtils.rm_rf @screenshot_dir
+    FileUtils.rm_rf WatirCats.config.screenshot_dir
   end
 end

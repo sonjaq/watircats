@@ -1,16 +1,9 @@
 module WatirCats
   
   class Runner
-    def initialize(task, parameter_hash)
+    def initialize(task, sources)
       
-      @options = parameter_hash
-
-      # Setup the sources to send to mapper, snapper, and comparer
-      sources = parameter_hash[:sources]
-
       # Setup the directories for screenshots and comparison output
-      screenshot_dir = parameter_hash[:screenshot_dir]
-      output_dir     = parameter_hash[:output_dir]
 
       # Using a case statement to determine how to operate.
       # case and when are not to be waste an indent level
@@ -26,22 +19,17 @@ module WatirCats
           scheme   = uri.scheme || "http"
 
           # Grab a Mapper object to pass to Snapper
-          site_map = WatirCats::Mapper.new(base_url, scheme, @options)
+          site_map = WatirCats::Mapper.new( base_url, scheme )
           
           # Snapper will snap screenshots, using a site_map object
-          WatirCats::Snapper.new(base_url, site_map, screenshot_dir)
+          WatirCats::Snapper.new( base_url, site_map )
         end
 
         folders        = WatirCats::Snapper.folders
         base_folder    = folders.first
         changed_folder = folders.last
 
-        WatirCats::Comparer.new( 
-                            base_folder, 
-                            changed_folder, 
-                            output_dir, 
-                            @options
-                            )
+        WatirCats::Comparer.new( base_folder, changed_folder )
 
       # Only take screenshots
       when :screenshots_only
@@ -55,22 +43,17 @@ module WatirCats
           scheme   = uri.scheme
 
           # Grab a Mapper object to pass to Snapper
-          site_map = WatirCats::Mapper.new(base_url, scheme, @options)
+          site_map = WatirCats::Mapper.new( base_url, scheme )
           
           # Snapper will snap screenshots, using a site_map object
-          WatirCats::Snapper.new(base_url, site_map, screenshot_dir)
+          WatirCats::Snapper.new( base_url, site_map )
         end
 
       # Let's just compare folders
       when :folders
         base_folder    = sources.first
         changed_folder = sources.last
-        WatirCats::Comparer.new(
-                            base_folder, 
-                            changed_folder, 
-                            output_dir, 
-                            @options
-                            )
+        WatirCats::Comparer.new( base_folder, changed_folder )
       # End case
       end
 
