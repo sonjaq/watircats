@@ -9,7 +9,7 @@ Wraith's original comparison command lies at the heart of the comparison functio
 Some of the features:
 - Responsive Screenshots
 - Multiple sources for URLs, but most rely on /sitemap.xml for use
-- Multiple Browsing engines. Chrome, Firefox, FirefoxESR, and theoretical support for IE
+- Multiple Browsing engines. Chrome, Firefox, FirefoxESR, and support for IE
 - Proxy and custom binary path support for Firefox
 
 ## What is it?
