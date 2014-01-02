@@ -89,11 +89,17 @@ module WatirCats
 
       # Iterate through the paths, using the key as a label, value as a path
       paths.each do |label, path|
+        # Create our base array to use to execute tests
+        potential_body_classes = [:all]
         # Do custom tests here
-        body_class = @browser.body.class_name
+        body_classes = @browser.body.class_name
+        # Split the class string for the <body> element on spaces, then shovel
+        # each body_class into the potential_body_classes array
+        body_classes.split.each { |body_class| potential_body_classes << body_class }
+        
         @@custom_test_results[path] = {}
 
-        [:all, body_class].each do |the_class|
+        potential_body_classes.each do |the_class|
           if @class_tests.include? the_class
             methods_to_send = @class_test_mapping[the_class]
 

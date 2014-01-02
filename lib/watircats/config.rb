@@ -15,13 +15,15 @@ module WatirCats
   end
 
   # This allows us to get the config setting from anywhere within WatirCats
-  # by using WatirCats.config_setting( string_or_symbol )
+  # by using WatirCats.config.setting_name
   def self.config
     # Return the @@config class var to allow chaining for values
     @@config
   end
 
   def self.update_config( options_hash )
+    # Instantiate a new Config unless @@config already is a Config object
+    @@config = Config.new({ }) unless @@config.is_a? Config
     options_hash.each do |key, value| 
       @@config.new_key( key, value )
     end
