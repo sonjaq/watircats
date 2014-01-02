@@ -69,6 +69,6 @@ licence. Take a look at the LICENSE file in the code.
 
 ## Credits
 
- * [Andrew Leaf](http://clockwork.net/people/avleaf)
+ * [Andrew Leaf](http://clockwork.net/people/andrew_leaf/)
  * [Wraith from BBC News](http://github.com/bbc-news/wraith)
 
