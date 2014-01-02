@@ -35,12 +35,12 @@ or
 
 ## Usage
 
-Compare And Take Screenshots:
-    `watircats compare http://my.example.com http://my-other.example.com` 
-Compare two folders of screenshots:
-    `watircats folders folder_a folder_b`
-Take screenshots at several widths:
-    `watircats screenshots http://my.example.com --widths 1024 800 320`
+- Compare And Take Screenshots:
+ - `watircats compare http://my.example.com http://my-other.example.com` 
+- Compare two folders of screenshots:
+ - `watircats folders folder_a folder_b`
+- Take screenshots at several widths:
+ - `watircats screenshots http://my.example.com --widths 1024 800 320`
 
 ## Configuration
 
@@ -70,5 +70,5 @@ licence. Take a look at the LICENSE file in the code.
 ## Credits
 
  * [Andrew Leaf](http://clockwork.net/people/avleaf)
- * [Original Source](http://github.com/bbc-news/wraith)
+ * [Wraith from BBC News](http://github.com/bbc-news/wraith)
 
