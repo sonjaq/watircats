@@ -1,20 +1,19 @@
 # WatirCats
 
-WatirCats began as a simple fork of Wraith, from the developers at BBC News.
+WatirCats began as a simple for to Wraith, from the developers at BBC News.
 
-Orignally, Wraith used Phantom.js as its browser, but it was too darned slow, so the browsing engine was converted to Watir-Webdriver. There were also several other limitations to Wraith that hampered its use at Clockwork, so it was enhanced to support a number of unique features. 
+Orignally, Wraith used Phantom.js as it's browser, but it was too darned slow, so the browsing engine was converted to Watir-Webdriver. There were also several other limitations to Wraith that hampered its use at Clockwork, so it was enhanced to support a number of unique features. There is part of one line left of core functionality from Wraith that calls ImageMagick's 'compare' executable. Everything else is fresh code.
 
-Wraith's original comparison command lies at the heart of the comparison functionality of WatirCats. 
-
-Some of the features:
-- Responsive Screenshots
-- Multiple sources for URLs, but most rely on /sitemap.xml for use
-- Multiple Browsing engines. Chrome, Firefox, FirefoxESR, and theoretical support for IE
-- Proxy and custom binary path support for Firefox
+Some of the features
+	- Multiple sources for URLs, but most rely on /sitemap.xml for use
+	- Multiple Browsing engines. Chrome, Firefox, FirefoxESR, and even IE
+	- Proxy and custom binary path support for Firefox
+	- Specify multiple widths of screenshots
 
 ## What is it?
 
 WatirCats uses Watir-Webdriver to grab screenshots of pages at multiple widths.  It also grabs and parses a site's sitemap, assuming the site map is hosted at the site_root/sitemap.xml
+
 
 ## Requirements
 
@@ -24,29 +23,13 @@ WatirCats uses Watir-Webdriver to grab screenshots of pages at multiple widths. 
 
 ## Installation
 
-`gem install watircats`
+gem install watircats
 
-or
 
-- Checkout this repository
-- `bundle install`
-- `gem build watircats.gemspec`
-- `gem install WatirCats-0.2.0.gem`
+## Config
 
-## Usage
+Configuration can be done at the command line or via a config file. See 'sample_config.yml' for the available parameters. Specify a config file at runtime with --config_file "my_config_file.yml"
 
-Compare And Take Screenshots:
-    `watircats compare http://my.example.com http://my-other.example.com` 
-Compare two folders of screenshots:
-    `watircats folders folder_a folder_b`
-Take screenshots at several widths:
-    `watircats screenshots http://my.example.com --widths 1024 800 320`
-
-## Configuration
-
-Configuration can be done at the command line or via a config file. See 'sample_config.yml' for the available parameters. 
-
-Specify a config file at runtime with `--config_file my_config_file.yml`
 
 
 If you want to add functionality to this project, pull requests are welcome.
@@ -62,13 +45,14 @@ If you want to add functionality to this project, pull requests are welcome.
 **Please raise any issues with this project as a GitHub issue.**
 
 
-## License
+## Licence
 
-WatirCats is available to everyone under the terms of the MIT open source
+Wraith is available to everyone under the terms of the MIT open source
 licence. Take a look at the LICENSE file in the code.
+
 
 ## Credits
 
- * [Andrew Leaf](http://clockwork.net/people/avleaf)
  * [Original Source](http://github.com/bbc-news/wraith)
+ * [Andrew Leaf](http://clockwork.net/people/avleaf)
 
