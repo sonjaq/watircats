@@ -175,13 +175,12 @@ module WatirCats
       
       cloned_options = options.dup
       if cloned_options[:config_file]
-        config = YAML::load_file cloned_options[:config_file] if cloned_options[:config_file]
+        config = YAML::load_file cloned_options[:config_file]
         config.each do |key,value|
           cloned_options[key.to_sym] = value 
         end
       end
       merged_opts = cloned_options.merge(options)
-      p merged_opts
       WatirCats.configure merged_opts
     end
 
