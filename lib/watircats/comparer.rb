@@ -7,8 +7,7 @@ module WatirCats
 
 
     def initialize(source_a, source_b)
-      # Get the directories in screenshots
-      # @dirs = self.get_directories_to_compare
+
       @@results    = []
       @@strip_zero = WatirCats.config.strip_zero_differences || nil
      
@@ -23,7 +22,9 @@ module WatirCats
 
       # Compare the directories
       compare_directories(latest_shots_folder, previous_shots_folder)
-      
+
+      # Return self
+      self
     end
    
     def reset_comparison_folder
@@ -78,7 +79,7 @@ module WatirCats
     
     def generate_thumbs  
     
-      unless Comparer.results.size < 1
+      unless results.size < 1
         unless File.directory? "#{@comparison_dir}/thumbs"
           FileUtils.mkdir "#{@comparison_dir}/thumbs"
         end
@@ -93,7 +94,7 @@ module WatirCats
       data = `compare -fuzz 20% -metric AE -highlight-color blue #{previous_grab} #{latest_grab} #{@comparison_dir}/#{output_file} 2>&1`.chomp
       # Handle logging
       return data if ( @@strip_zero == true && data.match(/^0/) )
-      csv = WatirCats.config.csv
+      csv     = WatirCats.config.csv
       verbose = WatirCats.config.verbose
       print "#{output_file}" if ( csv || verbose )
       print ",#{data}" if csv
@@ -102,7 +103,7 @@ module WatirCats
       data
     end
 
-    def self.results
+    def results
       sorted = @@results.sort_by { |k| k[:status] }
       if @@strip_zero == true
         return sorted.reject { |capture| true if capture[:result] == "0" }
