@@ -106,6 +106,7 @@ module WatirCats
     def screenshots(*source_arguments)
       ensure_imagemagick
 
+      handle_configuration( options )
       # Setting an exit status to track for altered screens
       @exit_status = 0 
 
