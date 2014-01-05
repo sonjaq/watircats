@@ -83,10 +83,8 @@ module WatirCats
           FileUtils.mkdir "#{@comparison_dir}/thumbs"
         end
 
-        current_path = FileUtils.pwd
-        FileUtils.chdir "#{@comparison_dir}"
-        thumbs = `mogrify -format png -path thumbs -thumbnail 50x100 *.png`
-        FileUtils.chdir "#{current_path}"
+        # Generate thumbnails
+        `mogrify -format png -path #{@comparison_dir}/thumbs -thumbnail 50x100 #{@comparison_dir}/*.png`
       end
     end
 
