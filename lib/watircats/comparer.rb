@@ -35,7 +35,7 @@ module WatirCats
           end
         end
       else
-        FileUtils.mkdir(@comparison_dir)
+        FileUtils.mkdir_p(@comparison_dir)
       end
     end
 
