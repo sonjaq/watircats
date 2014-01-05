@@ -41,6 +41,8 @@ module WatirCats
     method_options common_screenshot_options
 
     def compare(*source_arguments)
+      ensure_imagemagick
+
       # Configure options      
       handle_configuration( options )
 
@@ -72,6 +74,8 @@ module WatirCats
     method_options common_compare_options
 
     def folders(*source_arguments)     
+      ensure_imagemagick
+
       handle_configuration( options )
       # Setting an exit status to track for altered screens
       @exit_status = 0 
@@ -100,6 +104,8 @@ module WatirCats
     method_options common_screenshot_options
 
     def screenshots(*source_arguments)
+      ensure_imagemagick
+
       # Setting an exit status to track for altered screens
       @exit_status = 0 
 
@@ -179,5 +185,15 @@ module WatirCats
       WatirCats.configure merged_opts
     end
 
+    def ensure_imagemagick
+      # Ensure that Imagemagick's compare is installed
+      begin
+        `compare --version`
+      rescue
+        puts "Please ensure ImageMagick is in your system path to use WatirCats. \nPlease visit http://www.imagemagick.org."
+        exit 
+      end
+    end
+    
   end
 end
