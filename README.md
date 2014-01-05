@@ -24,7 +24,7 @@ WatirCats uses Watir-Webdriver to grab screenshots of pages at multiple widths. 
 
 ## Installation
 
-`gem install watircats`
+`gem install WatirCats`
 
 or
 
