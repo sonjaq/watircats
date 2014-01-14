@@ -1,7 +1,5 @@
 require 'autotest/restart'
-require 'minitest/pride'
-
 
 Autotest.add_hook :initialize do |at|
-  at.testlib = "minitest/pride"
+  at.order = :random
 end
