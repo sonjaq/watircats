@@ -3,7 +3,7 @@ $:.push File.expand_path("../lib", __FILE__)
 require "watircats/version"
 
 Gem::Specification.new do |s|
-  s.name        = "WatirCats"
+  s.name        = "watircats"
   s.version     = WatirCats::VERSION
   s.authors     = ["Andrew Leaf"]
   s.email       = ["andrew@clockwork.net"]
