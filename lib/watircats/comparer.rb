@@ -8,7 +8,7 @@ module WatirCats
 
     def initialize(source_a, source_b)
 
-      @@results    = []
+      @@results    = [ ]
       @@strip_zero = WatirCats.config.strip_zero_differences || nil
      
       @comparison_dir = WatirCats.config.output_dir.chomp("/")
@@ -110,6 +110,26 @@ module WatirCats
       else
         return sorted
       end
+    end
+
+
+    def self.sanitize_results(data)
+      data.each do | hash |
+        hash[:result] = 'image mismatch' if hash[:result].match(/compare/)
+      end
+    end
+
+    def self.the_results
+      sorted = @@results.sort_by { |k| k[:status] }
+
+      sanitize_results(sorted)
+
+      if @@strip_zero
+        return sorted.reject { |cap| true if cap[:result] == "0" }
+      else
+        return sorted
+      end
+
     end
 
   end

@@ -1,5 +1,4 @@
 require "haml"
-require "awesome_print"
 
 module WatirCats
   class Reporter
@@ -36,7 +35,7 @@ module WatirCats
   %body
     %div#container
       - data.each do |path| 
-        %div{ :class => "item" }
+        %div{ :class => "item", :style => "background-color: " + path[:status_color]  }
           %a{ :href => path[:compared_shot] }
             - thumb = "thumbs/" + path[:compared_shot]
             %img{ :src => thumb, :alt => path[:compared_shot], :title => path[:compared_shot] }

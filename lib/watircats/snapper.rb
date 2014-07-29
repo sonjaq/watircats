@@ -9,6 +9,7 @@ module WatirCats
       @base_url       = base_url
       @screenshot_dir = WatirCats.config.screenshot_dir
       @widths         = WatirCats.config.widths
+      @images_dir     = WatirCats.config.images_dir
       
       # Handle the environments that require profile configuration
       configure_browser
@@ -51,6 +52,16 @@ module WatirCats
     end
 
     def capture_page_image(url, file_name)
+      
+      # skip existing screenshots if we've specified that option
+      if WatirCats.config.skip_existing
+          if FileTest.exists?(file_name)
+             puts "Skipping existing file at " + file_name
+             return
+          end
+      end
+
+
       @browser.goto url
       # Wait for page to complete loading by querying document.readyState
       script = "return document.readyState"
@@ -79,7 +90,11 @@ module WatirCats
       FileUtils.mkdir "#{@screenshot_dir}" unless File.directory? "#{@screenshot_dir}"
 
       stamped_base_url_folder = "#{@screenshot_dir}/#{@base_url}-#{@time_stamp}"
-      FileUtils.mkdir "#{stamped_base_url_folder}" 
+      if @images_dir
+          stamped_base_url_folder = "#{@screenshot_dir}/#{@images_dir}"
+      end
+	
+      FileUtils.mkdir "#{stamped_base_url_folder}" unless File.directory? "#{stamped_base_url_folder}"
  
       add_folder(stamped_base_url_folder)
 

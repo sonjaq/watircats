@@ -13,3 +13,4 @@ require "watircats/version"
 require "watircats/runner"
 require "watircats/cli"
 require "watircats/config"
+

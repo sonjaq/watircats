@@ -13,11 +13,13 @@ module WatirCats
       [:output_dir, '-o']             => "comparison",
       [:screenshot_dir, '-s']         => "screenshots",
       [:working_dir, '-w']            => :string,
+      [:images_dir, '-i']             => :string,
       [:reporting_enabled, '-r']      => :boolean,
       [:csv_output]                   => :boolean,
       [:verbose, '-v']                => :boolean,
       [:strip_zero_differences, '-z'] => :boolean,
       [:config_file, '-c']            => :string,
+      [:skip_existing, '-e']          => :boolean,
     }
 
     # Options that are common for screenshot operations
@@ -146,7 +148,7 @@ module WatirCats
       reporting = WatirCats.config.reporting_enabled
 
       if reporting
-        data       = WatirCats::Comparer.results
+        data       = WatirCats::Comparer.the_results
         data.each { |e| @exit_status = 1 unless e[:result].match(/0/) }
 
         report = WatirCats::Reporter.new( data ).build_html
