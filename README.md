@@ -24,14 +24,14 @@ WatirCats uses Watir-Webdriver to grab screenshots of pages at multiple widths. 
 
 ## Installation
 
-`gem install WatirCats`
+`gem install watircats`
 
 or
 
 - Checkout this repository
 - `bundle install`
 - `gem build watircats.gemspec`
-- `gem install WatirCats-0.2.0.gem`
+- `gem install watircats-0.2.3.gem`
 
 ## Usage
 
@@ -65,10 +65,10 @@ If you want to add functionality to this project, pull requests are welcome.
 ## License
 
 WatirCats is available to everyone under the terms of the MIT open source
-licence. Take a look at the LICENSE file in the code.
+license. Take a look at the LICENSE file in the code.
 
 ## Credits
 
- * [Andrew Leaf](http://clockwork.net/people/andrew_leaf/)
- * [Wraith from BBC News](http://github.com/bbc-news/wraith)
+ * [Andrew Leaf](http://clockwork.net/people/andrew_leaf/) - author, maintainer
+ * [Wraith from BBC News](http://github.com/bbc-news/wraith) - original concept
 
