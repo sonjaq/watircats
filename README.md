@@ -70,6 +70,6 @@ license. Take a look at the LICENSE file in the code.
 
 ## Credits
 
- * [Andrew Leaf](http://clockwork.net/people/andrew_leaf/) - author, maintainer
+ * [Leaf Andrew](http://clockwork.net/people/andrew_leaf/) - author, maintainer
  * [Wraith from BBC News](http://github.com/bbc-news/wraith) - original concept
 
