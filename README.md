@@ -1,4 +1,5 @@
 # WatirCats
+[![Gem Version](https://badge.fury.io/rb/watircats.svg)](http://badge.fury.io/rb/watircats)
 
 WatirCats began as a simple fork of Wraith, from the developers at BBC News.
 
