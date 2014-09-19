@@ -55,10 +55,10 @@ module WatirCats
       
       # skip existing screenshots if we've specified that option
       if WatirCats.config.skip_existing
-          if FileTest.exists?(file_name)
-             puts "Skipping existing file at " + file_name
-             return
-          end
+        if FileTest.exists?(file_name)
+         puts "Skipping existing file at " + file_name
+         return
+        end
       end
 
 
@@ -124,6 +124,9 @@ module WatirCats
           
           end
         end
+
+        # Skip if a redirect matches the avoided path
+        next if @browser.url.match( /#{WatirCats.config.avoided_path}/ )
 
         # For each width, resize the browser, take a screenshot
         widths.each do |width|
