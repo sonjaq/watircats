@@ -1,5 +1,5 @@
 module WatirCats
-  class Comparer 
+  class Comparer
 
     NO_CHANGE = "Snow"
     ERROR     = "Crimson"
@@ -10,10 +10,10 @@ module WatirCats
 
       @@results    = [ ]
       @@strip_zero = WatirCats.config.strip_zero_differences || nil
-     
+
       @comparison_dir = WatirCats.config.output_dir.chomp("/")
       # Get the last two directories that were created
-      
+
       previous_shots_folder = source_a.chomp("/")
       latest_shots_folder   = source_b.chomp("/")
 
@@ -26,13 +26,13 @@ module WatirCats
       # Return self
       self
     end
-   
+
     def reset_comparison_folder
       if File.directory? @comparison_dir
         dir_contents = Dir.glob("#{@comparison_dir}/*_compared.png")
         if dir_contents.size > 0
           dir_contents.each do |shot|
-            FileUtils.rm(shot)  
+            FileUtils.rm(shot)
           end
         end
       else
@@ -46,7 +46,7 @@ module WatirCats
 
       old_shots.each do |old_shot|
         new_shot = old_shot.gsub(previous, latest)
-      
+
         next unless File.exists? new_shot
         # Set a file prefix for output and info
         base_name     = old_shot.split("/").last.split(".").first
@@ -59,12 +59,12 @@ module WatirCats
         elsif comparison.match(/^[1-9]/)
           status = CHANGE
         end
-        @@results << { :compared_shot => output_file, 
+        @@results << { :compared_shot => output_file,
                        :result => comparison, :status_color => status }
 
         # Remove the file if there is no change to be concerned with
-        if @@strip_zero == true 
-          begin 
+        if @@strip_zero == true
+          begin
             FileUtils.rm "#{@comparison_dir}/#{output_file}" if status == NO_CHANGE
           rescue Exception => msg
             print msg
@@ -76,9 +76,9 @@ module WatirCats
       # Run the generate thumbs
       generate_thumbs if WatirCats.config.reporting_enabled
     end
-    
-    def generate_thumbs  
-    
+
+    def generate_thumbs
+
       unless results.size < 1
         unless File.directory? "#{@comparison_dir}/thumbs"
           FileUtils.mkdir "#{@comparison_dir}/thumbs"

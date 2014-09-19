@@ -6,7 +6,7 @@ module WatirCats
 
     def initialize( base_url, scheme )
       # Class variables that persist throughout the life of the application
-      
+
       @limit = WatirCats.config.limit
       @proxy = WatirCats.config.proxy
 
@@ -17,7 +17,7 @@ module WatirCats
       restrict_paths
 
       @base_url = base_url
-  
+
       # If the :url_list option is passed, it is assumed to be a file of urls,
       # one on each line. Otherwise, assume there is a sitemap
       if WatirCats.config.url_list
@@ -29,7 +29,7 @@ module WatirCats
           exit 1
         end
       else
-        xml        = get_sitemap_as_xml( scheme, @base_url ) 
+        xml        = get_sitemap_as_xml( scheme, @base_url )
         urls       = parse_sitemap_into_urls(xml)
       end
 
@@ -45,7 +45,7 @@ module WatirCats
         proxy = nil
       end
 
-      begin 
+      begin
         sitemap_data = ::OpenURI.open_uri((the_scheme + "://" + base_url + "/sitemap.xml"), :proxy => proxy )
         sitemap_xml  = ::XmlSimple.xml_in(sitemap_data)
       rescue Exception => msg
@@ -69,13 +69,13 @@ module WatirCats
       # Determine if this is the first pass
       if @@master_paths.size == 0
         mode = :first_run
-      else 
+      else
         mode = :not_first
       end
 
       # Create an empty hash to store paths in
       pending_paths = {}
-      
+
       # Iterate through the urls, grab only the valid paths post domain
       # Store each path_key with the extrapolated path
       urls.each do |url|
@@ -83,7 +83,7 @@ module WatirCats
 
         # Handled paths to look for and avoid
         if @subtree
-          next unless path.match @subtree 
+          next unless path.match @subtree
         end
         if @avoided_path
           next if path.match @avoided_path
@@ -105,7 +105,7 @@ module WatirCats
           end
         end
       end
-      
+
       # Store master paths if this is the first pass
       @@master_paths.merge! pending_paths if mode == :first_run
       # return the paths to crawl
@@ -114,7 +114,7 @@ module WatirCats
 
     def the_paths
       # TODO: Insert logic to limit to a specific subtree here
-      
+
       # Return the paths if there is a @limit
       return @the_paths.first(@limit.to_i) if @limit
       @the_paths.first(@the_paths.length)
@@ -134,10 +134,10 @@ module WatirCats
 
       # Only visit paths that match @subtree
       @subtree = WatirCats.config.limited_path
-      if @subtree 
+      if @subtree
         @subtree = /#{WatirCats.config.limited_path}/
       end
-      
+
       # If avoided_path is specified, avoid those
       @avoided_path = WatirCats.config.avoided_path
       if @avoided_path
