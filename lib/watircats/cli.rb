@@ -32,7 +32,8 @@ module WatirCats
       [:custom_body_class_tests] => :string,
       [:proxy, '-p']             => :string,
       [:limited_path]            => :string,
-      [:avoided_path]            => :string
+      [:avoided_path]            => :string,
+      [:ff_path]                 => :string
     }
 
     # Description for the next-to-be-defined 'compare' task
