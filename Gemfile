@@ -12,3 +12,5 @@ gem "psych"
 gem "awesome_print"
 gem "minitest"
 gem "autotest"
+
+gem "pry", group: :development
