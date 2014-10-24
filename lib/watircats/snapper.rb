@@ -41,7 +41,7 @@ module WatirCats
       # Retrieve the paths from the sitemap
       @paths      = site_map.the_paths
       @time_stamp = Time.now.to_i.to_s
-      
+
       process_paths
       @browser.quit
     end
@@ -126,8 +126,9 @@ module WatirCats
         end
 
         # Skip if a redirect matches the avoided path
-        next if @browser.url.match( /#{WatirCats.config.avoided_path}/ )
-
+        if WatirCats.config.avoided_path
+          next if @browser.url.match( /#{WatirCats.config.avoided_path}/ )
+        end
         # For each width, resize the browser, take a screenshot
         widths.each do |width|
           resize_browser width
