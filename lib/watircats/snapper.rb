@@ -48,7 +48,7 @@ module WatirCats
       script = "return document.readyState"
       @browser.wait_until { @browser.execute_script(script) == "complete" }
       
-      # quick and dirty page delay
+      # quick and dirty page delay for issue #1
       if @delay
         @browser.wait_until { sleep(@delay) }
       end
