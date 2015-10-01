@@ -37,7 +37,7 @@ module WatirCats
     }
 
     # Description for the next-to-be-defined 'compare' task
-    desc 'compare http://SITE_A http://SITE_B', 'Compare Screenshots from two sites'
+    desc 'compare [OPTIONS] http://SITE_A http://SITE_B', 'Compare Screenshots from two sites'
     
     # Add the options for comparison and screenshot operations to the next task
     method_options common_compare_options
