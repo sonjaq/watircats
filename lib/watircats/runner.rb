@@ -22,7 +22,7 @@ module WatirCats
           site_map = WatirCats::Mapper.new( base_url, scheme )
           
           # Snapper will snap screenshots, using a site_map object
-          WatirCats::Snapper.new( base_url, site_map )
+          WatirCats::Snapper.new( base_url, scheme, site_map )
         end
 
         folders        = WatirCats::Snapper.folders
@@ -46,7 +46,7 @@ module WatirCats
           site_map = WatirCats::Mapper.new( base_url, scheme )
           
           # Snapper will snap screenshots, using a site_map object
-          WatirCats::Snapper.new( base_url, site_map )
+          WatirCats::Snapper.new( base_url, scheme, site_map )
         end
 
       # Let's just compare folders

@@ -5,8 +5,10 @@ module WatirCats
     
     BROWSER_HEIGHT = 5000
 
-    def initialize(base_url, site_map)
-      @base_url       = base_url
+    def initialize(base_url, scheme, site_map)
+      puts "Snapper host: #{base_url}"
+      @base_url       = base_url # (actually just the HOSTNAME)
+      @scheme         = scheme
       @screenshot_dir = WatirCats.config.screenshot_dir
       @widths         = WatirCats.config.widths
       @images_dir     = WatirCats.config.images_dir
@@ -56,17 +58,43 @@ module WatirCats
       # skip existing screenshots if we've specified that option
       if WatirCats.config.skip_existing
         if FileTest.exists?(file_name)
-         puts "Skipping existing file at " + file_name
+         puts "Skipping existing file at " + file_name # verbose
          return
         end
       end
 
-
-      @browser.goto url
-      # Wait for page to complete loading by querying document.readyState
-      script = "return document.readyState"
-      @browser.wait_until { @browser.execute_script(script) == "complete" }
+      print "goto: #{url}" # verbose, no lf
+      begin
+        @browser.goto url
+        # Wait for page to complete loading by querying document.readyState
+        script = "return document.readyState"
+        @browser.wait_until { @browser.execute_script(script) == "complete" }
+      rescue => e
+        puts "" # lf
+        puts "  oops! tried goto & wait_until but: #{e}"
+        # puts "  browser status: " + @browser.status # crashes!
+        # fingers crossed!
+        @browser.close
+        configure_browser
+        return
+      end
       
+      if @browser.url != url
+        # @todo detect if host is different, offsite redirect
+        puts "" # lf
+        puts "  redirected to: #{@browser.url}" # verbose
+      else
+        puts " - OK"
+      end
+
+      # Skip if a redirect matches the avoided path
+      if WatirCats.config.avoided_path
+        if @browser.url.match( /#{WatirCats.config.avoided_path}/ )
+          puts "  skipped, redirect matches: /#{WatirCats.config.avoided_path}/" # verbose
+          return
+        end
+      end
+
       # Take and save the screenshot      
       @browser.screenshot.save(file_name)
     end
@@ -104,36 +132,48 @@ module WatirCats
 
       # Iterate through the paths, using the key as a label, value as a path
       paths.each do |label, path|
-        # Create our base array to use to execute tests
-        potential_body_classes = [:all]
-        # Do custom tests here
-        body_classes = @browser.body.class_name
-        # Split the class string for the <body> element on spaces, then shovel
-        # each body_class into the potential_body_classes array
-        body_classes.split.each { |body_class| potential_body_classes << body_class }
-        
-        @@custom_test_results[path] = {}
 
-        potential_body_classes.each do |the_class|
-          if @class_tests.include? the_class
-            methods_to_send = @class_test_mapping[the_class]
+        # @TODO wait a minute, why are we looking at @browser.body here when we haven't used path at all yet!?!?
+        # if @browser.body.exists?
+        if false
+          # Create our base array to use to execute tests
+          potential_body_classes = [:all]
+          # Do custom tests here
+          # @TODO next line crashes after timeout e.g. http://col-forestlake-k12-mn0.dev.clockwork.net/ql_quick_links/ql_lunches/
+          body_classes = @browser.body.class_name
+          # Split the class string for the <body> element on spaces, then shovel
+          # each body_class into the potential_body_classes array
+          body_classes.split.each { |body_class| potential_body_classes << body_class }
 
-            methods_to_send.each do |custom_method|
-              @@custom_test_results[path][custom_method] = self.send( custom_method )
+          @@custom_test_results[path] = {}
+
+          potential_body_classes.each do |the_class|
+            if @class_tests.include? the_class
+              methods_to_send = @class_test_mapping[the_class]
+
+              methods_to_send.each do |custom_method|
+                @@custom_test_results[path][custom_method] = self.send( custom_method )
+              end
+
             end
-          
           end
         end
+        # end body dependency
 
         # Skip if a redirect matches the avoided path
+        # @TODO this seems to be in the wrong place; no url has been goto'ed here
+        # or path instead of @browser.url?
         if WatirCats.config.avoided_path
-          next if @browser.url.match( /#{WatirCats.config.avoided_path}/ )
+          if path.match( /#{WatirCats.config.avoided_path}/ )
+            puts "skipping avoided path (in process_paths): #{path}" # verbose
+            next
+          end
         end
         # For each width, resize the browser, take a screenshot
         widths.each do |width|
           resize_browser width
           file_name = "#{stamped_base_url_folder}/#{label}_#{width}.png"
-          capture_page_image("#{@base_url}#{path}", file_name)
+          capture_page_image("#{@scheme}://#{@base_url}#{path}", file_name)
         end
       end
     end
