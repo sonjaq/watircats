@@ -15,7 +15,7 @@ module WatirCats
           
           # Prep the URI object
           uri      = URI.parse(source)
-          base_url = uri.host
+          base_url = uri.host   || source
           scheme   = uri.scheme || "http"
 
           # Grab a Mapper object to pass to Snapper
@@ -39,8 +39,8 @@ module WatirCats
           
           # Prep the URI object
           uri      = URI.parse(source)
-          base_url = uri.host
-          scheme   = uri.scheme
+          base_url = uri.host   || source
+          scheme   = uri.scheme || "http"
 
           # Grab a Mapper object to pass to Snapper
           site_map = WatirCats::Mapper.new( base_url, scheme )
@@ -56,7 +56,6 @@ module WatirCats
         WatirCats::Comparer.new( base_folder, changed_folder )
       # End case
       end
-
 
     end
   end
