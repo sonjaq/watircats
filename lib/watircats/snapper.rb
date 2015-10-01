@@ -119,33 +119,6 @@ module WatirCats
       # Iterate through the paths, using the key as a label, value as a path
       paths.each do |label, path|
 
-        # @TODO wait a minute, why are we looking at @browser.body here when we haven't used path at all yet!?!?
-        # if @browser.body.exists?
-        if false
-          # Create our base array to use to execute tests
-          potential_body_classes = [:all]
-          # Do custom tests here
-          # @TODO next line crashes after timeout e.g. http://col-forestlake-k12-mn0.dev.clockwork.net/ql_quick_links/ql_lunches/
-          body_classes = @browser.body.class_name
-          # Split the class string for the <body> element on spaces, then shovel
-          # each body_class into the potential_body_classes array
-          body_classes.split.each { |body_class| potential_body_classes << body_class }
-
-          @@custom_test_results[path] = {}
-
-          potential_body_classes.each do |the_class|
-            if @class_tests.include? the_class
-              methods_to_send = @class_test_mapping[the_class]
-
-              methods_to_send.each do |custom_method|
-                @@custom_test_results[path][custom_method] = self.send( custom_method )
-              end
-
-            end
-          end
-        end
-        # end body dependency
-
         # Skip if a redirect matches the avoided path
         # @TODO this seems to be in the wrong place; no url has been goto'ed here
         # or path instead of @browser.url?
