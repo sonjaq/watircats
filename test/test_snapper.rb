@@ -4,7 +4,6 @@ require 'minitest/mock'
 class SnapperTest < Minitest::Test
   def setup
     @base_url                = "www.clockwork.net"
-    $custom_body_class_tests = []
     @sitemap                 = Minitest::Mock.new
     
     @options = { 

@@ -19,25 +19,6 @@ module WatirCats
       @class_test_mapping   = { }
       @@custom_test_results = { }
 
-      if WatirCats.config.custom_body_class_tests
-        load WatirCats.config.custom_body_class_tests
-        $custom_body_class_tests.each do |custom_test|
-          # Store the custom class tests in the class_tests array
-          # Map the class to the relevant method name
-          
-          body_class = custom_test[:body_class_name]
-          @class_tests << body_class
-          if @class_test_mapping[ body_class ] 
-            @class_test_mapping[ body_class ] = @class_test_mapping[ body_class ] + [ custom_test[:method_name] ]
-          else 
-            @class_test_mapping[ body_class ] = [ custom_test[:method_name] ]
-          end
-
-          custom_code = "def #{custom_test[:method_name]}; #{custom_test[:custom_code]}; end"
-          WatirCats::Snapper.class_eval custom_code
-        end
-      end
-
       # Retrieve the paths from the sitemap
       @paths      = site_map.the_paths
       @time_stamp = Time.now.to_i.to_s
