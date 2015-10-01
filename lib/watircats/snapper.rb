@@ -44,28 +44,26 @@ module WatirCats
         end
       end
 
-      print "goto: #{url}" # verbose, no lf
+      print "goto: #{url}" # verbose info, and suppressing linefeed
       begin
         @browser.goto url
         # Wait for page to complete loading by querying document.readyState
         script = "return document.readyState"
         @browser.wait_until { @browser.execute_script(script) == "complete" }
       rescue => e
-        puts "" # lf
-        puts "  oops! tried goto & wait_until but: #{e}"
-        # puts "  browser status: " + @browser.status # crashes!
-        # fingers crossed!
+        puts "\n  [ERROR] Tried goto & wait_until, but: #{e}"
+        # NB @browser.status might be handy here, but it crashes Firefox
+        # Relaunch and carry on
         @browser.close
         configure_browser
         return
       end
       
       if @browser.url != url
-        # @todo detect if host is different, offsite redirect
-        puts "" # lf
-        puts "  redirected to: #{@browser.url}" # verbose
+        # @todo detect offsite redirect, if host is different?
+        puts "\n  redirected to: #{@browser.url}" # verbose
       else
-        puts " - OK"
+        puts " - OK" # verbose info
       end
 
       # Skip if a redirect matches the avoided path
