@@ -84,7 +84,7 @@ module WatirCats
       urls.each do |url|
         uri  = URI(url)
         path = uri.path
-        path = path + '?' + uri.query unless uri.query.nil?
+        path += '?' + uri.query unless uri.query.nil?
 
         # Handled paths to look for and avoid
         if @subtree
