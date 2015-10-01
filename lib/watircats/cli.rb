@@ -27,9 +27,9 @@ module WatirCats
       [:browser, '-b']           => "firefox",
       [:widths]                  => :array, 
       [:limit, '-l']             => :numeric,
+      [:delay, '-d']             => :numeric,
       [:url_list]                => :string,
       [:limit]                   => :string,
-      [:custom_body_class_tests] => :string,
       [:proxy, '-p']             => :string,
       [:limited_path]            => :string,
       [:avoided_path]            => :string,
@@ -146,28 +146,14 @@ module WatirCats
 
     def handle_reporting
       # Handle standard reporting
-      reporting = WatirCats.config.reporting_enabled
+       return unless WatirCats.config.reporting_enabled
 
-      if reporting
-        data       = WatirCats::Comparer.the_results
-        data.each { |e| @exit_status = 1 unless e[:result].match(/0/) }
+      data       = WatirCats::Comparer.the_results
+      data.each { |e| @exit_status = 1 unless e[:result].match(/^0$/) }
 
-        report = WatirCats::Reporter.new( data ).build_html
-        File.open("#{WatirCats.config.output_dir}/index.html", 'w') do |f|
-          f.write report
-        end
-      end
-
-      # Handle custom reporting
-      custom_tests = WatirCats.config.custom_body_class_tests
-
-      if custom_tests
-        results = WatirCats::Snapper.custom_test_results
-        report  = WatirCats::Reporter.build_custom_results( results )
-
-        File.open("#{WatirCats.config.output_dir}/custom_report.html", 'w') do |f|
-          f.write report
-        end
+      report = WatirCats::Reporter.new( data ).build_html
+      File.open("#{WatirCats.config.output_dir}/index.html", 'w') do |f|
+        f.write report
       end
 
     end

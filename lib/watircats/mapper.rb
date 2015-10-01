@@ -10,8 +10,8 @@ module WatirCats
       @limit = WatirCats.config.limit
       @proxy = WatirCats.config.proxy
 
-      @@master_paths = {}
-      @@new_paths    = {}
+      @master_paths = {}
+      @new_paths    = {}
 
       # Subtree is a way to limit screenshots based on a path. It gets placed into a regular expression.
       restrict_paths
@@ -29,8 +29,8 @@ module WatirCats
           exit 1
         end
       else
-        xml        = get_sitemap_as_xml( scheme, @base_url )
-        urls       = parse_sitemap_into_urls(xml)
+        xml  = get_sitemap_as_xml( scheme, @base_url )
+        urls = parse_sitemap_into_urls(xml)
       end
 
       @the_paths = paths(urls)
@@ -38,20 +38,20 @@ module WatirCats
 
     def get_sitemap_as_xml(scheme, base_url)
 
-      the_scheme = scheme || "http"
+      scheme ||=  "http"
       if @proxy
-        proxy = the_scheme + "://" + @proxy
+        proxy = scheme  + "://" + @proxy
       else
         proxy = nil
       end
 
-      begin
-        sitemap_data = ::OpenURI.open_uri((the_scheme + "://" + base_url + "/sitemap.xml"), :proxy => proxy )
-        sitemap_xml  = ::XmlSimple.xml_in(sitemap_data)
-      rescue Exception => msg
-        print msg
-        exit 1
-      end
+
+      sitemap_data = ::OpenURI.open_uri((scheme  + "://" + base_url + "/sitemap.xml"), :proxy => proxy )
+      ::XmlSimple.xml_in(sitemap_data)
+    rescue Exception => msg
+      print msg
+      exit 1
+
     end
 
     def parse_sitemap_into_urls(xml)
@@ -67,7 +67,7 @@ module WatirCats
     def paths(urls)
 
       # Determine if this is the first pass
-      if @@master_paths.size == 0
+      if @master_paths.size == 0
         mode = :first_run
       else
         mode = :not_first
@@ -94,20 +94,20 @@ module WatirCats
 
         # If this is the first run, definitely process it
         # If not the first run, ensure path_key exists
-        # If not the first run, path_key not present, put it in @@new_paths
+        # If not the first run, path_key not present, put it in @new_paths
         if mode == :first_run
           pending_paths[path_key] = path
         else
-          if @@master_paths[path_key]
+          if @master_paths[path_key]
             pending_paths[path_key] = path
           else
-            @@new_paths[path_key]   = path
+            @new_paths[path_key]   = path
           end
         end
       end
 
       # Store master paths if this is the first pass
-      @@master_paths.merge! pending_paths if mode == :first_run
+      @master_paths.merge! pending_paths if mode == :first_run
       # return the paths to crawl
       pending_paths
     end
@@ -121,13 +121,13 @@ module WatirCats
     end
 
     def master_paths
-      # Enforce limit on @@master_paths, too, because why not
-      return @@master_paths.first(@limit.to_i) if @limit
-      @@master_paths.first(@@master_paths.length)
+      # Enforce limit on @master_paths, too, because why not
+      return @master_paths.first(@limit.to_i) if @limit
+      @master_paths.first(@master_paths.length)
     end
 
     def new_paths
-      @@new_paths.first(@@new_paths.length)
+      @new_paths.first(@new_paths.length)
     end
 
     def restrict_paths

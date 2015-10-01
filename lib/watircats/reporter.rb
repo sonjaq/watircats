@@ -43,37 +43,7 @@ module WatirCats
             %strong Pixels Changed: 
             = path[:result]
 TEMPLATE
-    end
-
-    def self.build_custom_results(hash)
-      AwesomePrint.defaults = { :html => true, :indent => 2, :plain => true}
-      template = <<TEMPLATE
-!!! 5
-%html
-  %head
-    %title Custom Test Results
-    %script{:type => "text/javascript", 
-            :src => "https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"}
-    %script{:type => "text/javascript",
-            :src => "https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"}
-    :css
-      .item { width:auto;  font-family: sans-serif; font-size: 10px; }
-      .clear { float: clear }
-  %body
-    %div#container
-      - hash.each_pair do |key, value|
-        %div{ :class => "item" }
-          %div{:class => "left"}
-            %pre{:class => "prettyprint lang-rb"}
-              = key
-          %div
-            %pre{:class => "prettyprint lang-rb"}
-              != value.to_s.gsub(",",",\n")
-        %div{ :class => "clear" }
-    %script
-      $(window).load("prettyPrint()")
-TEMPLATE
-    Haml::Engine.new(template).render binding, :hash => hash
+      template
     end
 
   end

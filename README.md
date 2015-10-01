@@ -1,11 +1,9 @@
 # WatirCats
 [![Gem Version](https://badge.fury.io/rb/watircats.svg)](http://badge.fury.io/rb/watircats)
 
-WatirCats began as a simple fork of Wraith, from the developers at BBC News.
+WatirCats uses Watir-Webdriver to grab screenshots of pages at multiple widths.  It also grabs and parses a site's sitemap, assuming the site map is hosted at the site_root/sitemap.xml. 
 
-Orignally, Wraith used Phantom.js as its browser, but it was too darned slow, so the browsing engine was converted to Watir-Webdriver. There were also several other limitations to Wraith that hampered its use at Clockwork, so it was enhanced to support a number of unique features. 
-
-Wraith's original comparison command lies at the heart of the comparison functionality of WatirCats. 
+Using the `compare`, ImageMagick is used to see if the images have differences. If they do, you'll get a visual diff in the output folder.
 
 Some of the features:
 - Responsive Screenshots
@@ -13,9 +11,6 @@ Some of the features:
 - Multiple Browsing engines. Chrome, Firefox, FirefoxESR, and support for IE
 - Proxy and custom binary path support for Firefox
 
-## What is it?
-
-WatirCats uses Watir-Webdriver to grab screenshots of pages at multiple widths.  It also grabs and parses a site's sitemap, assuming the site map is hosted at the site_root/sitemap.xml
 
 ## Requirements
 
@@ -32,7 +27,7 @@ or
 - Checkout this repository
 - `bundle install`
 - `gem build watircats.gemspec`
-- `gem install watircats-0.2.3.gem`
+- `gem install watircats-0.2.5.gem`
 
 ## Usage
 
@@ -70,6 +65,6 @@ license. Take a look at the LICENSE file in the code.
 
 ## Credits
 
- * [Andie Leaf](http://clockwork.net/people/andie_leaf/) - author, maintainer
+ * [Andie Leaf](http://github.com/avleaf) - author, maintainer
  * [Wraith from BBC News](http://github.com/bbc-news/wraith) - original concept
 

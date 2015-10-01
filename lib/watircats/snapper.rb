@@ -10,7 +10,7 @@ module WatirCats
       @screenshot_dir = WatirCats.config.screenshot_dir
       @widths         = WatirCats.config.widths
       @images_dir     = WatirCats.config.images_dir
-      
+      @delay          = WatirCats.config.delay
       # Handle the environments that require profile configuration
       configure_browser
 
@@ -18,25 +18,6 @@ module WatirCats
       @class_tests          = [ ]
       @class_test_mapping   = { }
       @@custom_test_results = { }
-
-      if WatirCats.config.custom_body_class_tests
-        load WatirCats.config.custom_body_class_tests
-        $custom_body_class_tests.each do |custom_test|
-          # Store the custom class tests in the class_tests array
-          # Map the class to the relevant method name
-          
-          body_class = custom_test[:body_class_name]
-          @class_tests << body_class
-          if @class_test_mapping[ body_class ] 
-            @class_test_mapping[ body_class ] = @class_test_mapping[ body_class ] + [ custom_test[:method_name] ]
-          else 
-            @class_test_mapping[ body_class ] = [ custom_test[:method_name] ]
-          end
-
-          custom_code = "def #{custom_test[:method_name]}; #{custom_test[:custom_code]}; end"
-          WatirCats::Snapper.class_eval custom_code
-        end
-      end
 
       # Retrieve the paths from the sitemap
       @paths      = site_map.the_paths
@@ -67,6 +48,10 @@ module WatirCats
       script = "return document.readyState"
       @browser.wait_until { @browser.execute_script(script) == "complete" }
       
+      # quick and dirty page delay for issue #1
+      if @delay
+        @browser.wait_until { sleep(@delay) }
+      end
       # Take and save the screenshot      
       @browser.screenshot.save(file_name)
     end
