@@ -51,7 +51,7 @@ class MapperTest < Minitest::Test
 
   def test_mapper
     mapper = WatirCats::Mapper.new( @base_url, @scheme )
-    expected = [["root", "/"]]
+    expected = [["business_development", "/business_development/"]]
     assert_equal mapper.the_paths, expected
     assert_equal mapper.master_paths, expected
     assert_equal mapper.new_paths, []
