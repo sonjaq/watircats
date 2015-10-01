@@ -150,7 +150,7 @@ module WatirCats
 
       if reporting
         data       = WatirCats::Comparer.the_results
-        data.each { |e| @exit_status = 1 unless e[:result].match(/0/) }
+        data.each { |e| @exit_status = 1 unless e[:result].match(/^0$/) }
 
         report = WatirCats::Reporter.new( data ).build_html
         File.open("#{WatirCats.config.output_dir}/index.html", 'w') do |f|
