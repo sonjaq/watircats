@@ -5,6 +5,7 @@ module WatirCats
   class Mapper
 
     def initialize( base_url, scheme )
+      puts "Mapper host: #{base_url}"
       # Class variables that persist throughout the life of the application
 
       @limit = WatirCats.config.limit
@@ -64,6 +65,8 @@ module WatirCats
       urls
     end
 
+    # @param urls array of full urls
+    # @return hash where file_name-key => path
     def paths(urls)
 
       # Determine if this is the first pass
@@ -79,14 +82,19 @@ module WatirCats
       # Iterate through the urls, grab only the valid paths post domain
       # Store each path_key with the extrapolated path
       urls.each do |url|
-        path = URI.parse(url).path
+        uri  = URI(url)
+        path = uri.path
+        path = path + '?' + uri.query unless uri.query.nil?
 
         # Handled paths to look for and avoid
         if @subtree
           next unless path.match @subtree
         end
         if @avoided_path
-          next if path.match @avoided_path
+          if path.match @avoided_path
+            puts "avoided path in sitemap: #{path}"
+            next
+          end
         end
 
         path_key = path.tr("/","-")[1..-2] unless path == "/"
