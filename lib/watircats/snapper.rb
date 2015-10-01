@@ -17,7 +17,6 @@ module WatirCats
       # Allowing for custom page class tests
       @class_tests          = [ ]
       @class_test_mapping   = { }
-      @@custom_test_results = { }
 
       # Retrieve the paths from the sitemap
       @paths      = site_map.the_paths
@@ -89,27 +88,6 @@ module WatirCats
 
       # Iterate through the paths, using the key as a label, value as a path
       paths.each do |label, path|
-        # Create our base array to use to execute tests
-        potential_body_classes = [:all]
-        # Do custom tests here
-        body_classes = @browser.body.class_name
-        # Split the class string for the <body> element on spaces, then shovel
-        # each body_class into the potential_body_classes array
-        body_classes.split.each { |body_class| potential_body_classes << body_class }
-        
-        @@custom_test_results[path] = {}
-
-        potential_body_classes.each do |the_class|
-          if @class_tests.include? the_class
-            methods_to_send = @class_test_mapping[the_class]
-
-            methods_to_send.each do |custom_method|
-              @@custom_test_results[path][custom_method] = self.send( custom_method )
-            end
-          
-          end
-        end
-
         # Skip if a redirect matches the avoided path
         if WatirCats.config.avoided_path
           next if @browser.url.match( /#{WatirCats.config.avoided_path}/ )
@@ -146,10 +124,6 @@ module WatirCats
       else
         @browser = ::Watir::Browser.new engine
       end
-    end
-
-    def self.custom_test_results
-      @@custom_test_results ||= { }
     end
 
   end
