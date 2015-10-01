@@ -4,7 +4,6 @@ GEM
     ZenTest (4.11.0)
     autotest (4.4.6)
       ZenTest (>= 4.4.1)
-    awesome_print (1.6.1)
     childprocess (0.5.6)
       ffi (~> 1.0, >= 1.0.11)
     coderay (1.1.0)
@@ -39,7 +38,6 @@ PLATFORMS
 
 DEPENDENCIES
   autotest
-  awesome_print
   haml
   minitest
   pry

@@ -9,7 +9,6 @@ gem "watir-webdriver"
 gem "thor"
 gem "haml"
 gem "psych"
-gem "awesome_print"
 gem "minitest"
 gem "autotest"
 
