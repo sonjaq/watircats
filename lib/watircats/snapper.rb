@@ -10,7 +10,7 @@ module WatirCats
       @screenshot_dir = WatirCats.config.screenshot_dir
       @widths         = WatirCats.config.widths
       @images_dir     = WatirCats.config.images_dir
-      
+      @delay          = WatirCats.config.delay
       # Handle the environments that require profile configuration
       configure_browser
 
@@ -48,6 +48,10 @@ module WatirCats
       script = "return document.readyState"
       @browser.wait_until { @browser.execute_script(script) == "complete" }
       
+      # quick and dirty page delay
+      if @delay
+        @browser.wait_until { sleep(@delay) }
+      end
       # Take and save the screenshot      
       @browser.screenshot.save(file_name)
     end

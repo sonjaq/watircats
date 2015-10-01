@@ -27,6 +27,7 @@ module WatirCats
       [:browser, '-b']           => "firefox",
       [:widths]                  => :array, 
       [:limit, '-l']             => :numeric,
+      [:delay, '-d']             => :numeric,
       [:url_list]                => :string,
       [:limit]                   => :string,
       [:proxy, '-p']             => :string,

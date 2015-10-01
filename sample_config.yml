@@ -3,6 +3,7 @@
 # 
 # avoided_path            : string_that_matches_paths_to_avoid
 # browser                 : firefox
+# delay                   : 1
 # csv                     : false
 # ff_path                 : /Applications/FirefoxESR.app/Contents/MacOS/firefox-bin
 # limit                   : 1
