@@ -17,8 +17,7 @@ class SnapperTest < Minitest::Test
   def test_snapper_takes_snaps
     
     WatirCats.configure(@options)
-
-    snapped = WatirCats::Snapper.new( @base_url, @sitemap )
+    WatirCats::Snapper.new( @base_url, @sitemap )
 
     working_dir = Dir.pwd
     Dir.chdir( WatirCats.config.screenshot_dir )
