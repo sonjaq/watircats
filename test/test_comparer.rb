@@ -45,6 +45,19 @@ class ComparerTest < Minitest::Test
     FileUtils.rm_rf output_dir
   end
 
+  def test_compare_directories_find_no_differences
+    WatirCats.configure :reporting_enabled => true, :output_dir => "test/testables/output/with_thumbs"
+    output_dir = WatirCats.config.output_dir
+
+    comparer = WatirCats::Comparer.new( @source_a, @source_a )
+    expected = [
+      {:compared_shot=>"watircat_compared.png", :result=>"0", :status_color=>"Snow"},
+      {:compared_shot=>"watircat_no_compare_compared.png", :result=>"0", :status_color=>"Snow"}
+    ]
+    assert_equal expected, comparer.results
+    FileUtils.rm_rf output_dir
+  end
+
   def teardown
   end
 
