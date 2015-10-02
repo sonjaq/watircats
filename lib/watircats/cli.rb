@@ -37,7 +37,7 @@ module WatirCats
     }
 
     # Description for the next-to-be-defined 'compare' task
-    desc 'compare [OPTIONS] http://SITE_A http://SITE_B', 'Compare Screenshots from two sites'
+    desc 'compare [OPTIONS] SITE_A SITE_B', 'Compare Screenshots from two sites'
     
     # Add the options for comparison and screenshot operations to the next task
     method_options common_compare_options
@@ -71,7 +71,7 @@ module WatirCats
       exit @exit_status
     end
 
-    desc 'folders FOLDER_A FOLDER_B', 'Compare two folders of screenshots'
+    desc 'folders [OPTIONS] FOLDER_A FOLDER_B', 'Compare two folders of screenshots'
 
     # Add the options for comparison operations
     method_options common_compare_options
@@ -101,7 +101,7 @@ module WatirCats
       exit @exit_status
     end
 
-    desc 'screenshots SITE_A [SITE_B SITE_C ...]', 'Take Screenshots of any number of sites'
+    desc 'screenshots [OPTIONS] SITE_A [SITE_B SITE_C ...]', 'Take Screenshots of any number of sites'
  
     method_options common_compare_options
     method_options common_screenshot_options

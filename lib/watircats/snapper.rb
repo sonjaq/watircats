@@ -50,7 +50,7 @@ module WatirCats
         script = "return document.readyState"
         @browser.wait_until { @browser.execute_script(script) == "complete" }
       rescue => e
-        puts "\n  [ERROR] Tried goto & wait_until, but: #{e}"
+        puts "\n  Exception loading page! #{e}"
         # NB @browser.status might be handy here, but it crashes Firefox
         # Relaunch and carry on
         @browser.close
