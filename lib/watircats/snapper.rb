@@ -19,7 +19,6 @@ module WatirCats
       # Allowing for custom page class tests
       @class_tests          = [ ]
       @class_test_mapping   = { }
-      @@custom_test_results = { }
 
       # Retrieve the paths from the sitemap
       @paths      = site_map.the_paths
@@ -66,10 +65,10 @@ module WatirCats
         puts " - OK" # verbose info
       end
 
-      # Skip if a redirect matches the avoided path
+      # Skip screenshot if we got redirected to a path we should avoid
       if WatirCats.config.avoided_path
         if @browser.url.match( /#{WatirCats.config.avoided_path}/ )
-          puts "  skipped, redirect matches: /#{WatirCats.config.avoided_path}/" # verbose
+          puts "  skipped, redirect url matches: /#{WatirCats.config.avoided_path}/" # verbose
           return
         end
       end
@@ -116,10 +115,7 @@ module WatirCats
 
       # Iterate through the paths, using the key as a label, value as a path
       paths.each do |label, path|
-
-        # Skip if a redirect matches the avoided path
-        # @TODO this seems to be in the wrong place; no url has been goto'ed here
-        # or path instead of @browser.url?
+        # Skip if this path should be avoided
         if WatirCats.config.avoided_path
           if path.match( /#{WatirCats.config.avoided_path}/ )
             puts "skipping avoided path (in process_paths): #{path}" # verbose
@@ -158,10 +154,6 @@ module WatirCats
       else
         @browser = ::Watir::Browser.new engine
       end
-    end
-
-    def self.custom_test_results
-      @@custom_test_results ||= { }
     end
 
   end
