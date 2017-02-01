@@ -21,7 +21,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency 'require_all', '~> 1.3'
   s.add_dependency 'thor', '~> 0.18'
-  s.add_dependency 'watir-webdriver', '~> 0.8'
+  s.add_dependency 'watir', '~> 6.0'
   s.add_dependency 'xml-simple', '~> 1.1'
   s.add_dependency 'haml', '~> 4.0'
   s.add_dependency 'psych', '~> 2.0'
